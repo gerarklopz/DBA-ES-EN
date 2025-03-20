@@ -188,3 +188,121 @@ This query will return all employees belonging to other departments, excluding t
 
 ---
 
+### Practical application of related queries:
+For example, a failed login attempt from an unexpected country could be an indication of a brute-force attack, where an attacker attempts to access an account using multiple attempts with different password combinations. By using a `NOT LIKE` query to exclude certain countries or a `BETWEEN` query to filter attempts within a specific time range, we can quickly identify these possible threats.
+
+---
+### 7. Identifying Employees and Their Machines (INNER JOIN)
+**Description:**
+The `INNER JOIN` query will allow us to identify which employees are using which machines. The machines and employees tables will be joined on the common `device_id` column.
+
+**SQL Query:**
+```sql
+SELECT *
+FROM machines
+INNER JOIN employees
+ON machines.device_id = employees.device_id;
+```
+**Explanation:**
+The `INNER JOIN` query returns a complete list of machine details along with the employee information associated with them.Only records that exist in both tables will be included in the result.
+
+**Expected Result:**
+
+| device_id | machine_name | employee_id | employee_name | department  | office     |
+|-----------|--------------|-------------|---------------|-------------|------------|
+|    101    |  Laptop A    |      1      |  Alice Brown  |  Marketing  |  East-150  |
+|    102    |  Laptop B    |      2      |   Bob White   |  Marketing  |  East-267  |
+|    103    |  Desktop C   |      3      |  Carol Black  |  Marketing  |  East-320  |
+|    104    |  Desktop D   |      4      |  Dave Green   |   Sales     |  West-400  |
+|    105    |  Laptop E    |      5      |   Eve Blue    |  Finance    |  West-101  |
+---
+
+### 8. Retrieve All Machine and Employee Data (LEFT JOIN and RIGHT JOIN)
+### LEFT JOIN:
+**Description:**
+We use a `LEFT JOIN` to retrieve all machine records, even if they are not assigned to an employee.
+**SQL Query (LEFT JOIN):**
+```sql
+SELECT *
+FROM machines
+LEFT JOIN employees
+ON machines.device_id = employees.device_id;
+```
+**Explanation:**
+The `LEFT JOIN` returns all records from the machines table and corresponding employee details when available. If no employee is assigned, the corresponding employee columns will have `NULL` values.
+
+**Expected Result (LEFT JOIN):**
+
+device_id | machine_name | employee_id | employee_name | department | office
+--------- | ------------ | ----------- | ------------- | ---------- | --------
+101       | Laptop A     | 1           | Alice Brown   | Marketing  | East-150
+102       | Laptop B     | 2           | Bob White     | Marketing  | East-267
+103       | Desktop C    | 3           | Carol Black   | Marketing  | East-320
+104       | Desktop D    | 4           | Dave Green    | Sales      | West-400
+105       | Laptop E     | 5           | Eve Blue      | Finance    | West-101
+106       | Tablet F     | NULL        | NULL          | NULL       | NULL
+---
+### RIGHT JOIN
+**Description:**
+We use a `RIGHT JOIN` to return all employee records, even if they don't have an assigned machine.
+
+**SQL Query (RIGHT JOIN):**
+```sql
+SELECT *
+FROM machines
+RIGHT JOIN employees
+ON machines.device_id = employees.device_id;
+```
+**Explanation:**
+We use a `RIGHT JOIN` to retrieve all employee records, even if they do not have an assigned machine,if any. 
+If an employee doesn't have an assigned machine, the `machines` columns will be `NULL`.
+
+**Expected Result (RIGHT JOIN):**
+device_id | machine_name | employee_id | employee_name | department | office
+--------- | ------------ | ----------- | ------------- | ---------- | --------
+101       | Laptop A     | 1           | Alice Brown   | Marketing  | East-150
+102       | Laptop B     | 2           | Bob White     | Marketing  | East-267
+103       | Desktop C    | 3           | Carol Black   | Marketing  | East-320
+104       | Desktop D    | 4           | Dave Green    | Sales      | West-400
+105       | Laptop E     | 5           | Eve Blue      | Finance    | West-101
+NULL      | NULL         | 6           | Frank Red     | Finance    | West-105
+NULL      | NULL         | 7           | Grace Purple  | Sales      | West-305
+---
+### 9. Full Outer Join Between Employees and Machines
+**Description:**
+Finally, we use a Full Outer Join to return all records from both tables (employees and machines), filling in nulls where there are no matches between the tables.
+
+**SQL Query (Full Outer Join):**
+```sql
+SELECT *
+FROM employees
+FULL OUTER JOIN machines
+ON employees.device_id = machines.device_id;
+```
+**Explanation:**
+The Full Outer Join returns all records from both tables, filling in nulls where there are no matches. This way, all machines and all employees are included, regardless of whether they are related or not.
+
+**Expected Result (Full Outer Join):**
+device_id | machine_name | employee_id | employee_name | department | office
+--------- | ------------ | ----------- | ------------- | ---------- | --------
+101       | Laptop A     | 1           | Alice Brown   | Marketing  | East-150
+102       | Laptop B     | 2           | Bob White     | Marketing  | East-267
+103       | Desktop C    | 3           | Carol Black   | Marketing  | East-320
+104       | Desktop D    | 4           | Dave Green    | Sales      | West-400
+105       | Laptop E     | 5           | Eve Blue      | Finance    | West-101
+106       | Tablet F     | NULL        | NULL          | NULL       | NULL
+NULL      | NULL         | 6           | Frank Red     | Finance    | West-105
+NULL      | NULL         | 7           | Grace Purple  | Sales      | West-305
+---
+### Using JOINs in Security Investigations:
+Using different types of **JOINs (INNER, LEFT, RIGHT, FULL OUTER)** in security data analysis allows significant flexibility when cross-referencing information from different tables. Depending on the type of information we are looking for, an **INNER JOIN** might be ideal for identifying the most relevant events (for example, only failed login attempts from active users), while a LEFT JOIN might be more useful for obtaining all login attempts, even those not associated with a specific employee.
+
+### In Security Situations:
+As we can see from a failed login attempt from an unexpected country, a **LEFT JOIN** might be useful to more thoroughly investigate all activities and detect possible irregular access patterns. On the other hand, a **RIGHT JOIN** might be more appropriate when we want to ensure all employees are included in our investigation, regardless of whether or not they have an assigned machine. Finally, a **FULL OUTER JOIN** would be useful to obtain a comprehensive view of both sides of the data, ensuring that no access attempts or unusual activity are overlooked.
+
+### Conclusion
+In the context of computer security, **SQL queries** play a crucial role in allowing security professionals to conduct detailed investigations into suspicious events. Through the proper use of filters and functions such as **BETWEEN**, **LIKE**, and **NOT LIKE**, we can identify anomalous patterns and behavior in login attempts. However, the true power of these queries is revealed when tables are combined using joins, such as the different types of **JOIN** used in this investigation exercise.
+
+---
+
+
